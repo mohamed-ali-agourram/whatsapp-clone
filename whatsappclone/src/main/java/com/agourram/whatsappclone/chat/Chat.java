@@ -1,16 +1,23 @@
 package com.agourram.whatsappclone.chat;
 
+import static jakarta.persistence.GenerationType.UUID;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.agourram.whatsappclone.common.BaseAuditingEntity;
 import com.agourram.whatsappclone.message.Message;
 import com.agourram.whatsappclone.message.MessageState;
 import com.agourram.whatsappclone.message.MessageType;
 import com.agourram.whatsappclone.user.User;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -20,17 +27,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static jakarta.persistence.GenerationType.UUID;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "chat")
+@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID, query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :senderId OR c.recipient.id = :senderId ORDER BY createdDate DESC")
+@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER, query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id = :senderId AND c.recipient.id = :recipientId) OR (c.sender.id = :recipientId AND c.recipient.id = :senderId) ORDER BY createdDate DESC")
 public class Chat extends BaseAuditingEntity {
     @Id
     @GeneratedValue(strategy = UUID)
